@@ -1,2 +1,2 @@
 #!/bin/bash
-rm -r target
+rm -r bin
