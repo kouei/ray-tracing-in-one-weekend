@@ -1,0 +1,3 @@
+auto double_ptr = make_shared<double>(0.37);
+auto vec3_ptr   = make_shared<vec3>(1.414214, 2.718281, 1.618034);
+auto sphere_ptr = make_shared<sphere>(point3(0,0,0), 1.0);
