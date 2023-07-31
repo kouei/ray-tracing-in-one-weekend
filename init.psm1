@@ -26,7 +26,7 @@ function Create-DirectoryIfNotExists {
 
 function Build-RayTracer {
     Create-DirectoryIfNotExists -Path bin
-    cl.exe /EHsc src\*.cc /Fo:bin\ /Fe:bin\main.exe
+    CL /EHsc src\*.cc /Fo:bin\ /Fe:bin\main.exe
 }
 
 function Clean-RayTracer {
