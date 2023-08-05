@@ -6,16 +6,14 @@
 
 class sphere : public hittable {
 public:
-  sphere() = default;
+  sphere() {}
   sphere(point3 cen, double r) : center(cen), radius(r){};
 
   virtual bool hit(const ray &r, double t_min, double t_max,
                    hit_record &rec) const override;
-
   virtual ~sphere() = default;
 
 public:
-  uint8_t _padding[4];
   point3 center;
   double radius;
 };
