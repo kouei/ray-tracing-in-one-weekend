@@ -1,5 +1,6 @@
 #include "rtweekend.h"
 
+#include "camera.h"
 #include "color.h"
 #include "hittable_list.h"
 #include "sphere.h"
@@ -11,7 +12,7 @@ color ray_color(const ray &r, const hittable &world) {
     point3 target = rec.p + rec.normal + random_in_unit_sphere();
     return 0.5 * ray_color(ray(rec.p, target - rec.p), world);
   }
-  
+
   vec3 unit_direction = unit_vector(r.direction());
   auto t = 0.5 * (unit_direction.y() + 1.0);
   return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
