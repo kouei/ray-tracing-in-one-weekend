@@ -29,6 +29,10 @@ function Build-RayTracer {
     CL /EHsc /Fo:"bin\" /Fe:"bin\main.exe" /O2 /Wall /wd4711 /wd4710 /wd5045 src\*.cc
 }
 
+function Render-Output {
+    (.\bin\main.exe) -join "`n" | Out-File -FilePath ".\bin\output.ppm" -Encoding ascii
+}
+
 function Clean-RayTracer {
     Delete-DirectoryIfExists -Path bin
 }
