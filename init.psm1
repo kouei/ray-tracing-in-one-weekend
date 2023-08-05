@@ -30,7 +30,13 @@ function Build-RayTracer {
 }
 
 function Render-Output {
-    (.\bin\main.exe) -join "`n" | Out-File -FilePath ".\bin\output.ppm" -Encoding ascii
+    param (
+        [parameter(ValueFromPipeline)]
+        [ValidateNotNull()]
+        [string]$Filename = "output.ppm"
+    )
+
+    (.\bin\main.exe) -join "`n" | Out-File -FilePath ".\bin\$Filename" -Encoding ascii
 }
 
 function Clean-RayTracer {
