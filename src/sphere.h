@@ -15,6 +15,7 @@ public:
   virtual ~sphere() = default;
 
 public:
+  uint8_t _padding[4];
   point3 center;
   double radius;
 };
