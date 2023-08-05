@@ -36,11 +36,7 @@ inline double random_double(double min, double max) {
 }
 
 inline double clamp(double x, double min, double max) {
-  if (x < min)
-    return min;
-  if (x > max)
-    return max;
-  return x;
+  return x < min ? min : (max < x ? max : x);
 }
 
 // Common Headers
