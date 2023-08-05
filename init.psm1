@@ -35,7 +35,10 @@ function Render-Output {
         [ValidateNotNull()]
         [string]$Filename = "output.ppm"
     )
-
+    if (!$Filename.EndsWith(".ppm")) {
+        $Filename += ".ppm"
+    }
+    
     (.\bin\main.exe) -join "`n" | Out-File -FilePath ".\bin\$Filename" -Encoding ascii
 }
 
