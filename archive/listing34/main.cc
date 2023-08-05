@@ -3,18 +3,8 @@
 #include "color.h"
 #include "hittable_list.h"
 #include "sphere.h"
-#include "camera.h"
 
 #include <iostream>
-
-auto _ = [](){
-  std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
-  std::cerr.tie(nullptr);
-  return 0;
-}();
-
 color ray_color(const ray &r, const hittable &world, int depth) {
   hit_record rec;
 
