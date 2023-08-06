@@ -1,0 +1,10 @@
+double cos_theta = fmin(dot(-unit_direction, rec.normal), 1.0);
+double sin_theta = sqrt(1.0 - cos_theta*cos_theta);
+
+if (refraction_ratio * sin_theta > 1.0) {
+    // Must Reflect
+    ...
+} else {
+    // Can Refract
+    ...
+}

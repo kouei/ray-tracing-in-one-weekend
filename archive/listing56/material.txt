@@ -1,0 +1,7 @@
+if (refraction_ratio * sin_theta > 1.0) {
+    // Must Reflect
+    ...
+} else {
+    // Can Refract
+    ...
+}
