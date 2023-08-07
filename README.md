@@ -12,6 +12,6 @@ https://raytracing.github.io/books/RayTracingInOneWeekend.html
 ## How to Render Image
 1. Start Menu -> Windows PowerShell
 2. cd to the repo
-3. Run `Import-Module -Force .\init.psm1`
+3. Run `init.ps1`
 4. Run `Render-Output -Filename <image-filename>`
 5. The .ppm image will be generated in the **bin** folder
