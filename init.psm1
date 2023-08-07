@@ -26,7 +26,7 @@ function Create-DirectoryIfNotExists {
 
 function Build-RayTracer {
     Create-DirectoryIfNotExists -Path bin
-    $compileCommand = 'CL /EHsc /Fo:"bin\" /Fe:"bin\main.exe" /O2 /Wall /wd4711 /wd4710 /wd5045 /wd4514 /wd4820 /wd4100 src\*.cc'
+    $compileCommand = 'CL src\*.cc /EHsc /Fo:bin\ /Fe:bin\main.exe /O2 /Wall /wd4711 /wd4710 /wd5045 /wd4514 /wd4820 /wd4100'
     $linkCommand = '/link /MACHINE:X64'
     Invoke-Expression "$compileCommand $linkCommand"
 }
