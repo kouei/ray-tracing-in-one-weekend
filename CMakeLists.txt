@@ -7,6 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 add_executable(cpu_ray_tracer src/cpu/main.cc)
 add_executable(gpu_ray_tracer src/gpu/main.cu)
 
+target_include_directories(cpu_ray_tracer PUBLIC src/include)
+target_include_directories(gpu_ray_tracer PUBLIC src/include)
+
 set_target_properties(gpu_ray_tracer PROPERTIES CUDA_ARCHITECTURES native)
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib")
