@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <cuda_runtime.h>
+#include "rtweekend.h"
 
 using std::sqrt;
 
