@@ -14,6 +14,4 @@ add_executable(gpu_ray_tracer src/gpu/main.cu)
 
 set_target_properties(gpu_ray_tracer PROPERTIES CUDA_ARCHITECTURES native)
 
-# target_compile_definitions(gpu_ray_tracer PUBLIC CUDA_RAY_TRACER)
-
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:libcmt.lib")
