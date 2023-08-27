@@ -4,20 +4,11 @@
 #include <cmath>
 #include <iostream>
 #include <cuda_runtime.h>
-#include "rtweekend.h"
 
 using std::sqrt;
 
 class vec3 {
 public:
-  __host__ inline static vec3 random() {
-    return vec3(random_double(), random_double(), random_double());
-  }
-
-  __host__ inline static vec3 random(float min, float max) {
-    return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
-  }
-
   __host__ __device__ vec3() : e{0.0f, 0.0f, 0.0f} {}
   __host__ __device__ vec3(float e0, float e1, float e2) : e{e0, e1, e2} {}
 
@@ -56,7 +47,7 @@ public:
 
   __host__ __device__ inline bool near_zero() const {
     // Return true if the vector is close to zero in all dimensions.
-    const float s = 1e-8;
+    const float s = 1e-8f;
     return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
   }
 
@@ -106,25 +97,6 @@ __host__ __device__ inline vec3 cross(const vec3 &u, const vec3 &v) {
 
 __host__ __device__ inline vec3 unit_vector(vec3 v) { return v / v.length(); }
 
-__host__ vec3 random_in_unit_sphere() {
-  while (true) {
-    auto p = vec3::random(-1.0f, 1.0f);
-    if (p.length_squared() >= 1.0f)
-      continue;
-    return p;
-  }
-}
-
-__host__ vec3 random_unit_vector() { return unit_vector(random_in_unit_sphere()); }
-
-__host__ vec3 random_in_hemisphere(const vec3 &normal) {
-  vec3 in_unit_sphere = random_in_unit_sphere();
-  if (dot(in_unit_sphere, normal) > 0.0f) // In the same hemisphere as the normal
-    return in_unit_sphere;
-  else
-    return -in_unit_sphere;
-}
-
 __host__ __device__ inline vec3 reflect(const vec3 &v, const vec3 &n) { return v - 2.0f * dot(v, n) * n; }
 
 __host__ vec3 refract(const vec3 &uv, const vec3 &n, float etai_over_etat) {
@@ -132,15 +104,6 @@ __host__ vec3 refract(const vec3 &uv, const vec3 &n, float etai_over_etat) {
   vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
   vec3 r_out_parallel = -sqrt(fabs(1.0f - r_out_perp.length_squared())) * n;
   return r_out_perp + r_out_parallel;
-}
-
-__host__ vec3 random_in_unit_disk() {
-  while (true) {
-    auto p = vec3(random_double(-1.0f, 1.0f), random_double(-1.0f, 1.0f), 0.0f);
-    if (p.length_squared() >= 1.0f)
-      continue;
-    return p;
-  }
 }
 
 #endif
