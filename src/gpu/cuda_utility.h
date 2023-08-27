@@ -1,5 +1,3 @@
-#ifdef CUDA_RAY_TRACER
-
 #include <cuda_runtime.h>
 #include <cstdlib>
 #include <iostream>
@@ -15,5 +13,3 @@ void check_cuda(cudaError_t result, const char * func, const char * file, const 
         exit(99);
     }
 }
-
-#endif
