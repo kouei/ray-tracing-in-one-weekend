@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <cuda_runtime.h>
 
 using std::sqrt;
 
