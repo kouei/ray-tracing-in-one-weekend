@@ -74,7 +74,7 @@ int main() {
     
     auto end = std::chrono::high_resolution_clock::now();
 
-    auto timer_in_ms = std::chrono::duration<double, std::milli>(end - start);
+    auto timer_in_ms = std::chrono::duration<float, std::milli>(end - start);
     std::cerr << "Time cost: " << timer_in_ms.count() << "ms.\n";
 
     // Output FB as Image
