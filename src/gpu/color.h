@@ -1,9 +1,9 @@
+// Migration Completed
+
 #ifndef COLOR_H
 #define COLOR_H
 
 #include "vec3.h"
-
-#include <iostream>
 
 __host__ __device__ void normalize_by_sample(color & c, int sample_count) {
   float divisor = 1.0f / sample_count;
