@@ -13,8 +13,8 @@ public:
   __device__ sphere(point3 cen, float r) : center(cen), radius(r){};
   __device__ sphere(point3 cen, float r, material * m) : center(cen), radius(r), mat_ptr(m) {};
 
-  virtual bool hit(const ray &r, float t_min, float t_max, hit_record &rec) const override;
-  virtual ~sphere() {}
+  __device__ virtual bool hit(const ray &r, float t_min, float t_max, hit_record &rec) const override;
+  __device__ virtual ~sphere() {}
 
 public:
   point3 center;

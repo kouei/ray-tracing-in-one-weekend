@@ -4,6 +4,7 @@
 #define RTWEEKEND_H
 
 #include <curand_kernel.h>
+#include <limits>
 
 constexpr const float infinity = std::numeric_limits<float>::infinity();
 constexpr const float pi = 3.1415926535897932385f;
