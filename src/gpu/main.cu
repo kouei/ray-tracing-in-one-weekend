@@ -9,6 +9,7 @@
 #include "sphere.h"
 
 #include <chrono>
+#include <ctime>
 #include <curand_kernel.h>
 #include <iostream>
 
@@ -98,7 +99,7 @@ __global__ void create_random_scene(hittable_list * world, hittable_ptr_t * obje
   }
 }
 
-__global__ void render_init(int max_x, int max_y, curandState * rand_state) {
+__global__ void render_init(unsigned long long seed, int max_x, int max_y, curandState * rand_state) {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
     if((i >= max_x) || (j >= max_y)) {
@@ -107,7 +108,7 @@ __global__ void render_init(int max_x, int max_y, curandState * rand_state) {
 
     int pixel_index = j * max_x + i;
     //Each thread gets same seed, a different sequence number, no offset
-    curand_init(1984, pixel_index, 0, &rand_state[pixel_index]);
+    curand_init(seed, pixel_index, 0, &rand_state[pixel_index]);
 }
 
 __global__ void render(vec3 * frame_buffer,
@@ -142,7 +143,7 @@ int main() {
   // Image
 
   const float aspect_ratio = 3.0f / 2.0f;
-  const int image_width = 1200;
+  const int image_width = 300;
   const int image_height = static_cast<int>(image_width / aspect_ratio);
   const int samples_per_pixel = 500;
   const int max_depth = 50;
@@ -168,8 +169,9 @@ int main() {
   int block_dim_y = (image_height + thread_dim_y - 1) / thread_dim_y;
   dim3 blocks(block_dim_x, block_dim_y);
   dim3 threads(thread_dim_x, thread_dim_y);
-  
-  render_init<<<blocks, threads>>>(image_width, image_height, d_rand_state);
+  unsigned long long seed = time(nullptr);
+
+  render_init<<<blocks, threads>>>(seed, image_width, image_height, d_rand_state);
   checkCudaErrors(cudaGetLastError());
   checkCudaErrors(cudaDeviceSynchronize());
 
