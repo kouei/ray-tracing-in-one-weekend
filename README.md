@@ -3,15 +3,20 @@ https://raytracing.github.io/books/RayTracingInOneWeekend.html
 
 # Quick Start for Windows Platform
 
-## How to Build
+## How to Configure
 1. Start Menu -> x64 Native Tools Command Prompt for VS 2022
 2. cd to the repo
-3. Run `init.bat`
-4. Run `buildd` to build ray tracer
+3. `mkdir build`
+4. `cd build`
+5. `cmake ..`
 
-## How to Render Image
-1. Start Menu -> Windows PowerShell
-2. cd to the repo
-3. Run `init.ps1`
-4. Run `Render-Output -Filename <image-filename>`
-5. The .ppm image will be generated in the **bin** folder
+## How to Build
+
+#### Build GPU Version
+`cmake --build . --target gpu_ray_tracer --config Release`
+
+#### Build CPU Version
+`cmake --build . --target cpu_ray_tracer --config Release`
+
+#### Build CPU Multi-Threaded Version
+`cmake --build . --target cpu_multi_threading_ray_tracer --config Release`
