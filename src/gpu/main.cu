@@ -61,6 +61,14 @@ hittable_list *create_world_cpu() {
   return world;
 }
 
+vec3 *create_frame_buffer_cpu(int image_width, int image_height) {
+  vec3 *frame_buffer;
+  int n_pixels = image_width * image_height;
+  checkCudaErrors(
+      cudaMallocManaged(&frame_buffer, n_pixels * sizeof(*frame_buffer)));
+  return frame_buffer;
+}
+
 int main() {
 
   // Image
@@ -109,11 +117,8 @@ int main() {
       viewport_upper_left + 0.5f * (pixel_delta_u + pixel_delta_v);
 
   // Allocate Frame Buffer
-  int n_pixels = image_width * image_height;
-  vec3 *frame_buffer;
-  size_t frame_buffer_size = n_pixels * sizeof(*frame_buffer);
 
-  checkCudaErrors(cudaMallocManaged(&frame_buffer, frame_buffer_size));
+  vec3 *frame_buffer = create_frame_buffer_cpu(image_width, image_height);
 
   // Render
 
