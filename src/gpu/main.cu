@@ -21,7 +21,7 @@ __device__ color ray_color(const ray &r, const hittable &world) {
   return (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
 }
 
-__global__ void render(vec3 *frame_buffer, int image_width, int image_height,
+__global__ void render(color *frame_buffer, int image_width, int image_height,
                        vec3 pixel_delta_u, vec3 pixel_delta_v,
                        point3 pixel00_loc, point3 camera_center,
                        hittable_list *world) {
@@ -61,8 +61,8 @@ hittable_list *create_world_cpu() {
   return world;
 }
 
-vec3 *create_frame_buffer_cpu(int image_width, int image_height) {
-  vec3 *frame_buffer;
+color *create_frame_buffer_cpu(int image_width, int image_height) {
+  color *frame_buffer;
   int n_pixels = image_width * image_height;
   checkCudaErrors(
       cudaMallocManaged(&frame_buffer, n_pixels * sizeof(*frame_buffer)));
@@ -118,7 +118,7 @@ int main() {
 
   // Allocate Frame Buffer
 
-  vec3 *frame_buffer = create_frame_buffer_cpu(image_width, image_height);
+  color *frame_buffer = create_frame_buffer_cpu(image_width, image_height);
 
   // Render
 
@@ -147,7 +147,7 @@ int main() {
   for (int image_y = 0; image_y < image_height; ++image_y) {
     for (int image_x = 0; image_x < image_width; ++image_x) {
       int pixel_index = image_y * image_width + image_x;
-      vec3 pixel = frame_buffer[pixel_index];
+      color pixel = frame_buffer[pixel_index];
 
       int ir = static_cast<int>(255.999 * pixel.x());
       int ig = static_cast<int>(255.999 * pixel.y());
