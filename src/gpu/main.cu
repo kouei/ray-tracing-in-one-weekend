@@ -2,6 +2,7 @@
 #include "cuda_utility.h"
 #include "hittable.h"
 #include "hittable_list.h"
+#include "interval.h"
 #include "ray.h"
 #include "rtweekend.h"
 #include "sphere.h"
@@ -12,7 +13,7 @@
 
 __device__ color ray_color(const ray &r, const hittable &world) {
   hit_record rec;
-  if (world.hit(r, 0.0f, infinity, rec)) {
+  if (world.hit(r, interval(0.0f, infinity), rec)) {
     return 0.5f * (rec.normal + color(1.0f, 1.0f, 1.0f));
   }
 
