@@ -98,9 +98,9 @@ __host__ void output_image(camera *cam, color *frame_buffer) {
       int pixel_index = image_y * cam->image_width + image_x;
       color pixel = frame_buffer[pixel_index];
 
-      int ir = static_cast<int>(255.999 * pixel.x());
-      int ig = static_cast<int>(255.999 * pixel.y());
-      int ib = static_cast<int>(255.999 * pixel.z());
+      int ir = static_cast<int>(255.999f * pixel.x());
+      int ig = static_cast<int>(255.999f * pixel.y());
+      int ib = static_cast<int>(255.999f * pixel.z());
 
       std::cout << ir << ' ' << ig << ' ' << ib << '\n';
     }
