@@ -26,10 +26,10 @@ public:
   __global__ friend void render(color *frame_buffer, camera *cam,
                                 hittable *world, curandState *rand_state);
 
-  __device__ friend vec3 pixel_sample_square(camera *cam,
+  __device__ friend vec3 pixel_sample_square(camera &cam,
                                              curandState &rand_state);
 
-  __device__ friend ray get_ray(camera *cam, int i, int j,
+  __device__ friend ray get_ray(camera &cam, int i, int j,
                                 curandState &rand_state);
 };
 
@@ -93,21 +93,21 @@ __device__ color ray_color(const ray &r, const hittable &world,
   return color(0.0f, 0.0f, 0.0f);
 }
 
-__device__ vec3 pixel_sample_square(camera *cam, curandState &rand_state) {
+__device__ vec3 pixel_sample_square(camera &cam, curandState &rand_state) {
   // Returns a random point in the square surrounding a pixel at the origin.
   auto px = -0.5f + random_float(rand_state);
   auto py = -0.5f + random_float(rand_state);
-  return (px * cam->pixel_delta_u) + (py * cam->pixel_delta_v);
+  return (px * cam.pixel_delta_u) + (py * cam.pixel_delta_v);
 }
 
-__device__ ray get_ray(camera *cam, int i, int j, curandState &rand_state) {
+__device__ ray get_ray(camera &cam, int i, int j, curandState &rand_state) {
   // Get a randomly sampled camera ray for the pixel at location i,j.
 
   auto pixel_center =
-      cam->pixel00_loc + (i * cam->pixel_delta_u) + (j * cam->pixel_delta_v);
+      cam.pixel00_loc + (i * cam.pixel_delta_u) + (j * cam.pixel_delta_v);
   auto pixel_sample = pixel_center + pixel_sample_square(cam, rand_state);
 
-  auto ray_origin = cam->center;
+  auto ray_origin = cam.center;
   auto ray_direction = pixel_sample - ray_origin;
 
   return ray(ray_origin, ray_direction);
@@ -131,7 +131,7 @@ __global__ void render(color *frame_buffer, camera *cam, hittable *world,
   color pixel_color = color(0.0f, 0.0f, 0.0f);
   curandState rand_state = rand_states[pixel_index];
   for (int sample = 0; sample < cam->samples_per_pixel; ++sample) {
-    ray r = get_ray(cam, image_x, image_y, rand_state);
+    ray r = get_ray(cam[0], image_x, image_y, rand_state);
     pixel_color += ray_color(r, world[0], rand_state);
   }
 
