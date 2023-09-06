@@ -100,7 +100,7 @@ __device__ ray get_ray(camera *cam, int i, int j, curandState *rand_state) {
 }
 
 __global__ void render(color *frame_buffer, camera *cam, hittable *world,
-                       curandState *rand_state) {
+                       curandState *rand_states) {
 
   int image_x = threadIdx.x + blockIdx.x * blockDim.x;
   int image_y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -114,12 +114,14 @@ __global__ void render(color *frame_buffer, camera *cam, hittable *world,
                       (image_y * cam->pixel_delta_v);
   auto ray_direction = pixel_center - cam->center;
 
+  curandState rand_state = rand_states[pixel_index];
   color pixel_color = color(0.0f, 0.0f, 0.0f);
   for (int sample = 0; sample < cam->samples_per_pixel; ++sample) {
-    ray r = get_ray(cam, image_x, image_y, rand_state);
+    ray r = get_ray(cam, image_x, image_y, &rand_state);
     pixel_color += ray_color(r, world[0]);
   }
 
+  rand_states[pixel_index] = curandState rand_state;
   frame_buffer[pixel_index] = pixel_color;
 }
 
