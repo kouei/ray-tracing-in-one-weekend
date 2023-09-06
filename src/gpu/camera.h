@@ -27,10 +27,10 @@ public:
                                 hittable *world, curandState *rand_state);
 
   __device__ friend vec3 pixel_sample_square(camera *cam,
-                                             curandState *rand_state);
+                                             curandState &rand_state);
 
   __device__ friend ray get_ray(camera *cam, int i, int j,
-                                curandState *rand_state);
+                                curandState &rand_state);
 };
 
 __global__ void new_camera(camera *cam) {
@@ -69,14 +69,14 @@ __global__ void new_camera(camera *cam) {
 }
 
 __device__ color ray_color(const ray &r, const hittable &world,
-                           curandState *local_rand_state) {
+                           curandState &rand_state) {
   hit_record rec;
   int max_depth = 10;
   ray cur_ray = r;
   float cur_attenuation = 1.0f;
   for (int i = 0; i < max_depth; ++i) {
     if (world.hit(cur_ray, interval(0.0f, infinity), rec)) {
-      vec3 direction = random_on_hemisphere(rec.normal, local_rand_state);
+      vec3 direction = random_on_hemisphere(rec.normal, rand_state);
       cur_ray = ray(rec.p, direction);
       cur_attenuation *= 0.5f;
       continue;
@@ -84,7 +84,8 @@ __device__ color ray_color(const ray &r, const hittable &world,
 
     vec3 unit_direction = unit_vector(cur_ray.direction());
     float a = 0.5f * (unit_direction.y() + 1.0f);
-    color output_color = (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
+    color output_color =
+        (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
     return cur_attenuation * output_color;
   }
 
@@ -92,14 +93,14 @@ __device__ color ray_color(const ray &r, const hittable &world,
   return color(0.0f, 0.0f, 0.0f);
 }
 
-__device__ vec3 pixel_sample_square(camera *cam, curandState *rand_state) {
+__device__ vec3 pixel_sample_square(camera *cam, curandState &rand_state) {
   // Returns a random point in the square surrounding a pixel at the origin.
   auto px = -0.5f + random_float(rand_state);
   auto py = -0.5f + random_float(rand_state);
   return (px * cam->pixel_delta_u) + (py * cam->pixel_delta_v);
 }
 
-__device__ ray get_ray(camera *cam, int i, int j, curandState *rand_state) {
+__device__ ray get_ray(camera *cam, int i, int j, curandState &rand_state) {
   // Get a randomly sampled camera ray for the pixel at location i,j.
 
   auto pixel_center =
@@ -130,8 +131,8 @@ __global__ void render(color *frame_buffer, camera *cam, hittable *world,
   color pixel_color = color(0.0f, 0.0f, 0.0f);
   curandState rand_state = rand_states[pixel_index];
   for (int sample = 0; sample < cam->samples_per_pixel; ++sample) {
-    ray r = get_ray(cam, image_x, image_y, &rand_state);
-    pixel_color += ray_color(r, world[0], &rand_state);
+    ray r = get_ray(cam, image_x, image_y, rand_state);
+    pixel_color += ray_color(r, world[0], rand_state);
   }
 
   rand_states[pixel_index] = rand_state;
