@@ -32,7 +32,6 @@ __global__ void delete_world(hittable_list *world) {
 int main() {
 
   // World
-
   hittable_list *world;
   checkCudaErrors(cudaMalloc(&world, sizeof(*world)));
   new_world<<<1, 1>>>(world);
@@ -40,7 +39,6 @@ int main() {
   checkCudaErrors(cudaDeviceSynchronize());
 
   // Camera
-
   camera *cam;
   checkCudaErrors(cudaMallocManaged(&cam, sizeof(*cam)));
   initialize<<<1, 1>>>(cam);
@@ -57,15 +55,13 @@ int main() {
   std::clog << "Block Dim (a x b threads) = " << n_thread_x << "x" << n_thread_y
             << "\n";
 
-  // Allocate Frame Buffer
-
+  // Frame Buffer
   color *frame_buffer;
   int n_pixels = cam->image_width * cam->image_height;
   checkCudaErrors(
       cudaMallocManaged(&frame_buffer, n_pixels * sizeof(*frame_buffer)));
 
   // Render
-
   int n_block_x = (cam->image_width + n_thread_x - 1) / n_thread_x;
   int n_block_y = (cam->image_height + n_thread_y - 1) / n_thread_y;
   dim3 blocks(n_block_x, n_block_y);
@@ -83,7 +79,6 @@ int main() {
             << " ms\n";
 
   // Output Image
-
   std::cout << "P3\n"
             << cam->image_width << ' ' << cam->image_height << "\n255\n";
 
