@@ -4,7 +4,6 @@
 #include "color.h"
 #include "cuda_utility.h"
 #include "hittable.h"
-#include "hittable_list.h"
 #include "rtweekend.h"
 #include <cuda_runtime.h>
 
@@ -23,7 +22,7 @@ private:
 public:
   __global__ friend void initialize(camera *cam);
   __global__ friend void render(color *frame_buffer, camera *cam,
-                                hittable_list *world);
+                                hittable *world);
 };
 
 __global__ void initialize(camera *cam) {
@@ -60,7 +59,7 @@ __global__ void initialize(camera *cam) {
       viewport_upper_left + 0.5f * (cam->pixel_delta_u + cam->pixel_delta_v);
 }
 
-__device__ color ray_color(const ray &r, const hittable_list &world) {
+__device__ color ray_color(const ray &r, const hittable &world) {
   hit_record rec;
   if (world.hit(r, interval(0.0f, infinity), rec)) {
     return 0.5f * (rec.normal + color(1.0f, 1.0f, 1.0f));
@@ -71,7 +70,7 @@ __device__ color ray_color(const ray &r, const hittable_list &world) {
   return (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
 }
 
-__global__ void render(color *frame_buffer, camera *cam, hittable_list *world) {
+__global__ void render(color *frame_buffer, camera *cam, hittable *world) {
 
   int image_x = threadIdx.x + blockIdx.x * blockDim.x;
   int image_y = threadIdx.y + blockIdx.y * blockDim.y;
