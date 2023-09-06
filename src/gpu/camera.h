@@ -90,12 +90,14 @@ __global__ void render(color *frame_buffer, camera *cam, hittable *world) {
 }
 
 __host__ void output_image(camera *cam, color *frame_buffer) {
-  std::cout << "P3\n"
-            << cam->image_width << ' ' << cam->image_height << "\n255\n";
+  int image_width = cam->image_width;
+  int image_height = cam->image_height;
 
-  for (int image_y = 0; image_y < cam->image_height; ++image_y) {
-    for (int image_x = 0; image_x < cam->image_width; ++image_x) {
-      int pixel_index = image_y * cam->image_width + image_x;
+  std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+  for (int y = 0; y < image_height; ++y) {
+    for (int x = 0; x < image_width; ++x) {
+      int pixel_index = y * image_width + x;
       color pixel = frame_buffer[pixel_index];
 
       int ir = static_cast<int>(255.999f * pixel.x());
