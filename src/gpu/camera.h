@@ -14,7 +14,7 @@ public:
   int image_width;
   int image_height;
 
-// private:
+private:
   point3 center;      // Camera center
   point3 pixel00_loc; // Location of pixel 0, 0
   vec3 pixel_delta_u; // Offset to pixel to the right

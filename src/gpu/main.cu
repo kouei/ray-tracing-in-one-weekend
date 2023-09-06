@@ -39,14 +39,6 @@ int main() {
   checkCudaErrors(cudaGetLastError());
   checkCudaErrors(cudaDeviceSynchronize());
 
-  // std::cout << cam->aspect_ratio << "\n";
-  // std::cout << cam->image_width << "\n";
-  // std::cout << cam->image_height << "\n";
-  // std::cout << cam->center.x() << ' ' << cam->center.y() << ' ' << cam->center.z() << "\n";
-  // std::cout << cam->pixel00_loc.x() << ' ' << cam->pixel00_loc.y() << ' ' << cam->pixel00_loc.z() << "\n";
-  // std::cout << cam->pixel_delta_u.x() << ' ' << cam->pixel_delta_u.y() << ' ' << cam->pixel_delta_u.z() << "\n";
-  // std::cout << cam->pixel_delta_v.x() << ' ' << cam->pixel_delta_v.y() << ' ' << cam->pixel_delta_v.z() << "\n";
-
   const int samples_per_pixel = 500;
   const int n_thread_x = 16;
   const int n_thread_y = 16;
