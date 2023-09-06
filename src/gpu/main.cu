@@ -14,19 +14,23 @@
 #include <iostream>
 
 __global__ void new_world(hittable_list *world) {
-  if (threadIdx.x == 0 && blockIdx.x == 0) {
-    new (world) hittable_list();
-    world->objects = new hittable_ptr[2];
-    world->add(new sphere(point3(0.0f, 0.0f, -1.0f), 0.5f));
-    world->add(new sphere(point3(0.0f, -100.5f, -1.0f), 100.0f));
+  if (threadIdx.x != 0 || blockIdx.x != 0) {
+    return;
   }
+
+  new (world) hittable_list();
+  world->objects = new hittable_ptr[2];
+  world->add(new sphere(point3(0.0f, 0.0f, -1.0f), 0.5f));
+  world->add(new sphere(point3(0.0f, -100.5f, -1.0f), 100.0f));
 }
 
 __global__ void delete_world(hittable_list *world) {
-  if (threadIdx.x == 0 && blockIdx.x == 0) {
-    for (size_t i = 0; i < world->objects_size; ++i) {
-      delete world->objects[i];
-    }
+  if (threadIdx.x != 0 || blockIdx.x != 0) {
+    return;
+  }
+
+  for (size_t i = 0; i < world->objects_size; ++i) {
+    delete world->objects[i];
   }
 }
 
@@ -84,8 +88,8 @@ int main() {
   std::clog << "Image Size = " << cam->image_width << " x " << cam->image_height
             << "\n";
   std::clog << "Samples Per Pixel = " << cam->samples_per_pixel << "\n";
-  std::clog << "Block Dim (a x b threads) = " << n_thread_x << " x " << n_thread_y
-            << "\n";
+  std::clog << "Block Dim (a x b threads) = " << n_thread_x << " x "
+            << n_thread_y << "\n";
 
   auto start = std::chrono::high_resolution_clock::now();
 

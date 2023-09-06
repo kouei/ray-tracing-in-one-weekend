@@ -34,7 +34,7 @@ public:
 };
 
 __global__ void new_camera(camera *cam) {
-  if (!(threadIdx.x == 0 && blockIdx.x == 0)) {
+  if (threadIdx.x != 0 || blockIdx.x != 0) {
     return;
   }
 
