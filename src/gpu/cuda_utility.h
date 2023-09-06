@@ -1,3 +1,6 @@
+#ifndef CUDA_UTILITY_H
+#define CUDA_UTILITY_H
+
 #include <cstdlib>
 #include <cuda_runtime.h>
 #include <iostream>
@@ -13,3 +16,5 @@ void check_cuda(cudaError_t result, const char *func, const char *file, const in
     exit(99);
   }
 }
+
+#endif
