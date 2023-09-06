@@ -95,6 +95,9 @@ int main() {
     }
   }
 
+  // Cleanup Frame Buffer
+  checkCudaErrors(cudaFree(frame_buffer));
+
   // Cleanup Camera
   checkCudaErrors(cudaFree(cam));
 
