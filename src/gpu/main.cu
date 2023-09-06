@@ -100,6 +100,9 @@ int main() {
     }
   }
 
+  // Cleanup Camera
+  checkCudaErrors(cudaFree(cam));
+
   // Cleanup World
   delete_world<<<1, 1>>>(world);
   checkCudaErrors(cudaGetLastError());
