@@ -59,15 +59,6 @@ int main() {
   checkCudaErrors(cudaGetLastError());
   checkCudaErrors(cudaDeviceSynchronize());
 
-  const int n_thread_x = 16;
-  const int n_thread_y = 16;
-
-  std::clog << "Image Size = " << cam->image_width << "x" << cam->image_height
-            << "\n";
-  std::clog << "Samples Per Pixel = " << cam->samples_per_pixel << "\n";
-  std::clog << "Block Dim (a x b threads) = " << n_thread_x << "x" << n_thread_y
-            << "\n";
-
   // Frame Buffer
   color *frame_buffer;
   int n_pixels = cam->image_width * cam->image_height;
@@ -75,6 +66,8 @@ int main() {
       cudaMallocManaged(&frame_buffer, n_pixels * sizeof(*frame_buffer)));
 
   // Choose Block Size and Thread Size
+  const int n_thread_x = 16;
+  const int n_thread_y = 16;
   int n_block_x = (cam->image_width + n_thread_x - 1) / n_thread_x;
   int n_block_y = (cam->image_height + n_thread_y - 1) / n_thread_y;
   dim3 blocks(n_block_x, n_block_y);
@@ -84,8 +77,16 @@ int main() {
   curandState *rand_state;
   checkCudaErrors(cudaMalloc(&rand_state, n_pixels * sizeof(*rand_state)));
   new_rand_state<<<blocks, threads>>>(time(nullptr), cam, rand_state);
+  checkCudaErrors(cudaGetLastError());
+  checkCudaErrors(cudaDeviceSynchronize());
 
   // Render
+  std::clog << "Image Size = " << cam->image_width << "x" << cam->image_height
+            << "\n";
+  std::clog << "Samples Per Pixel = " << cam->samples_per_pixel << "\n";
+  std::clog << "Block Dim (a x b threads) = " << n_thread_x << "x" << n_thread_y
+            << "\n";
+
   auto start = std::chrono::high_resolution_clock::now();
 
   render<<<blocks, threads>>>(frame_buffer, cam, world, rand_state);
