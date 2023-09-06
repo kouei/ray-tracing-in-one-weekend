@@ -68,15 +68,28 @@ __global__ void new_camera(camera *cam) {
       viewport_upper_left + 0.5f * (cam->pixel_delta_u + cam->pixel_delta_v);
 }
 
-__device__ color ray_color(const ray &r, const hittable &world) {
+__device__ color ray_color(const ray &r, const hittable &world,
+                           curandState *local_rand_state) {
   hit_record rec;
-  if (world.hit(r, interval(0.0f, infinity), rec)) {
-    return 0.5f * (rec.normal + color(1.0f, 1.0f, 1.0f));
+  int max_depth = 10;
+  ray cur_ray = r;
+  float cur_attenuation = 1.0f;
+  for (int i = 0; i < max_depth; ++i) {
+    if (world.hit(cur_ray, interval(0.0f, infinity), rec)) {
+      vec3 direction = random_on_hemisphere(rec.normal, local_rand_state);
+      cur_ray = ray(rec.p, direction);
+      cur_attenuation *= 0.5f;
+      continue;
+    }
+
+    vec3 unit_direction = unit_vector(cur_ray.direction());
+    float a = 0.5f * (unit_direction.y() + 1.0f);
+    color output_color = (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
+    return cur_attenuation * output_color;
   }
 
-  vec3 unit_direction = unit_vector(r.direction());
-  float a = 0.5f * (unit_direction.y() + 1.0f);
-  return (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
+  // Reach max depth
+  return color(0.0f, 0.0f, 0.0f);
 }
 
 __device__ vec3 pixel_sample_square(camera *cam, curandState *rand_state) {
@@ -100,7 +113,7 @@ __device__ ray get_ray(camera *cam, int i, int j, curandState *rand_state) {
 }
 
 __global__ void render(color *frame_buffer, camera *cam, hittable *world,
-                       curandState *rand_state) {
+                       curandState *rand_states) {
 
   int image_x = threadIdx.x + blockIdx.x * blockDim.x;
   int image_y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -115,11 +128,13 @@ __global__ void render(color *frame_buffer, camera *cam, hittable *world,
   auto ray_direction = pixel_center - cam->center;
 
   color pixel_color = color(0.0f, 0.0f, 0.0f);
+  curandState rand_state = rand_states[pixel_index];
   for (int sample = 0; sample < cam->samples_per_pixel; ++sample) {
-    ray r = get_ray(cam, image_x, image_y, rand_state);
-    pixel_color += ray_color(r, world[0]);
+    ray r = get_ray(cam, image_x, image_y, &rand_state);
+    pixel_color += ray_color(r, world[0], &rand_state);
   }
 
+  rand_states[pixel_index] = rand_state;
   frame_buffer[pixel_index] = pixel_color;
 }
 
