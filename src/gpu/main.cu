@@ -81,10 +81,10 @@ int main() {
   checkCudaErrors(cudaDeviceSynchronize());
 
   // Render
-  std::clog << "Image Size = " << cam->image_width << "x" << cam->image_height
+  std::clog << "Image Size = " << cam->image_width << " x " << cam->image_height
             << "\n";
   std::clog << "Samples Per Pixel = " << cam->samples_per_pixel << "\n";
-  std::clog << "Block Dim (a x b threads) = " << n_thread_x << "x" << n_thread_y
+  std::clog << "Block Dim (a x b threads) = " << n_thread_x << " x " << n_thread_y
             << "\n";
 
   auto start = std::chrono::high_resolution_clock::now();
