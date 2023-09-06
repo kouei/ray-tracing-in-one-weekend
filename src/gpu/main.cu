@@ -41,7 +41,7 @@ int main() {
   // Camera
   camera *cam;
   checkCudaErrors(cudaMallocManaged(&cam, sizeof(*cam)));
-  initialize<<<1, 1>>>(cam);
+  new_camera<<<1, 1>>>(cam);
   checkCudaErrors(cudaGetLastError());
   checkCudaErrors(cudaDeviceSynchronize());
 

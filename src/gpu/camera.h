@@ -20,12 +20,12 @@ private:
   vec3 pixel_delta_v; // Offset to pixel below
 
 public:
-  __global__ friend void initialize(camera *cam);
+  __global__ friend void new_camera(camera *cam);
   __global__ friend void render(color *frame_buffer, camera *cam,
                                 hittable *world);
 };
 
-__global__ void initialize(camera *cam) {
+__global__ void new_camera(camera *cam) {
   if (!(threadIdx.x == 0 && blockIdx.x == 0)) {
     return;
   }
