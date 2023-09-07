@@ -10,13 +10,13 @@ public:
   hittable_ptr *objects;
   size_t objects_size;
 
-  __host__ __device__ hittable_list() : objects(nullptr), objects_size(0) {}
+  __device__ hittable_list() : objects(nullptr), objects_size(0) {}
 
-  __host__ __device__ void add(hittable_ptr object) {
+  __device__ void add(hittable_ptr object) {
     this->objects[this->objects_size++] = object;
   }
 
-  __host__ __device__ bool hit(const ray &r, interval ray_t,
+  __device__ bool hit(const ray &r, interval ray_t,
                                hit_record &rec) const override {
     hit_record temp_rec;
     bool hit_anything = false;

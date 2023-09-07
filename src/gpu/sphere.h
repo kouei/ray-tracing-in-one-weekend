@@ -9,11 +9,11 @@
 
 class sphere : public hittable {
 public:
-  __host__ __device__ sphere(point3 _center, float _radius, material *_material)
+  __device__ sphere(point3 _center, float _radius, material *_material)
       : center(_center), radius(_radius), mat(_material) {}
 
-  __host__ __device__ bool hit(const ray &r, interval ray_t,
-                               hit_record &rec) const override {
+  __device__ bool hit(const ray &r, interval ray_t,
+                      hit_record &rec) const override {
     vec3 oc = r.origin() - this->center;
     auto a = r.direction().length_squared();
     auto half_b = dot(oc, r.direction());
@@ -42,6 +42,8 @@ public:
     rec.mat = this->mat;
     return true;
   }
+
+  __device__ ~sphere() { delete this->mat; }
 
 private:
   point3 center;
