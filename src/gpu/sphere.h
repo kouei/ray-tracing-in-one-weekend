@@ -15,19 +15,19 @@ public:
   __device__ bool hit(const ray &r, interval ray_t,
                       hit_record &rec) const override {
     vec3 oc = r.origin() - this->center;
-    auto a = r.direction().length_squared();
-    auto half_b = dot(oc, r.direction());
-    auto c = oc.length_squared() - this->radius * this->radius;
+    float a = r.direction().length_squared();
+    float half_b = dot(oc, r.direction());
+    float c = oc.length_squared() - this->radius * this->radius;
 
-    auto discriminant = half_b * half_b - a * c;
+    float discriminant = half_b * half_b - a * c;
     if (discriminant < 0.0f) {
       return false;
     }
 
-    auto sqrtd = sqrt(discriminant);
+    float sqrtd = sqrt(discriminant);
 
     // Find the nearest root that lies in the acceptable range.
-    auto root = (-half_b - sqrtd) / a;
+    float root = (-half_b - sqrtd) / a;
     if (!ray_t.surrounds(root)) {
       root = (-half_b + sqrtd) / a;
       if (!ray_t.surrounds(root)) {
