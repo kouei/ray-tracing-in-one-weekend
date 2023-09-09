@@ -28,6 +28,8 @@ __global__ void delete_world(hittable_list *world) {
       delete world->objects[i];
     }
   }
+
+  delete[] world->objects;
 }
 
 __global__ void new_rand_state(unsigned long long seed, camera *cam,
