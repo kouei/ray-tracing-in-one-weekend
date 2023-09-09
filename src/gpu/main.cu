@@ -5,6 +5,7 @@
 #include "hittable_list.h"
 #include "interval.h"
 #include "material.h"
+#include "material_list.h"
 #include "ray.h"
 #include "rtweekend.h"
 #include "sphere.h"
@@ -14,31 +15,36 @@
 #include <cuda_runtime.h>
 #include <iostream>
 
-__global__ void new_world(hittable_list *world) {
+__global__ void new_world(hittable_list *world, material_list *materials) {
   if (threadIdx.x != 0 || blockIdx.x != 0) {
     return;
   }
 
+  new (materials) material_list();
   material *material_ground = new lambertian(color(0.8f, 0.8f, 0.0f));
   material *material_center = new lambertian(color(0.1f, 0.2f, 0.5f));
   material *material_left = new dielectric(1.5f);
-  material *material_left2 = new dielectric(1.5f);
   material *material_right = new metal(color(0.8f, 0.6f, 0.2f), 0.0f);
+  materials->add(material_ground);
+  materials->add(material_center);
+  materials->add(material_left);
+  materials->add(material_right);
 
   new (world) hittable_list();
   world->add(new sphere(point3(0.0f, -100.5f, -1.0f), 100.0f, material_ground));
   world->add(new sphere(point3(0.0f, 0.0f, -1.0f), 0.5f, material_center));
   world->add(new sphere(point3(-1.0f, 0.0f, -1.0f), 0.5f, material_left));
-  world->add(new sphere(point3(-1.0f, 0.0f, -1.0f), -0.4f, material_left2));
+  world->add(new sphere(point3(-1.0f, 0.0f, -1.0f), -0.4f, material_left));
   world->add(new sphere(point3(1.0f, 0.0f, -1.0f), 0.5f, material_right));
 }
 
-__global__ void delete_world(hittable_list *world) {
+__global__ void delete_world(hittable_list *world, material_list *materials) {
   if (threadIdx.x != 0 || blockIdx.x != 0) {
     return;
   }
 
   world->~hittable_list();
+  materials->~material_list();
 }
 
 __global__ void new_rand_state(unsigned long long seed, camera *cam,
@@ -59,7 +65,9 @@ int main() {
   // World
   hittable_list *world;
   checkCudaErrors(cudaMalloc(&world, sizeof(*world)));
-  new_world<<<1, 1>>>(world);
+  material_list *materials;
+  checkCudaErrors(cudaMalloc(&materials, sizeof(*materials)));
+  new_world<<<1, 1>>>(world, materials);
   checkCudaErrors(cudaGetLastError());
   checkCudaErrors(cudaDeviceSynchronize());
 
@@ -122,8 +130,9 @@ int main() {
   checkCudaErrors(cudaFree(cam));
 
   // Cleanup World
-  delete_world<<<1, 1>>>(world);
+  delete_world<<<1, 1>>>(world, materials);
   checkCudaErrors(cudaGetLastError());
   checkCudaErrors(cudaDeviceSynchronize());
   checkCudaErrors(cudaFree(world));
+  checkCudaErrors(cudaFree(materials));
 }

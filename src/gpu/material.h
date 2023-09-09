@@ -15,6 +15,8 @@ public:
                                   curandState &rand_state) const = 0;
 };
 
+typedef material *material_ptr;
+
 class lambertian : public material {
 public:
   __device__ lambertian(const color &a) : albedo(a) {}

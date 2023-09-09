@@ -43,8 +43,6 @@ public:
     return true;
   }
 
-  __device__ ~sphere() { delete this->mat; }
-
 private:
   point3 center;
   float radius;
