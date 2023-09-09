@@ -11,7 +11,8 @@ public:
   size_t objects_size;
   size_t objects_capacity;
 
-  __device__ hittable_list() : objects(nullptr), objects_size(0), objects_capacity(0) {}
+  __device__ hittable_list()
+      : objects(nullptr), objects_size(0), objects_capacity(0) {}
 
   __device__ void add(hittable_ptr object) {
     if (!this->objects) {
@@ -26,16 +27,27 @@ public:
         new_objects[i] = this->objects[i];
       }
 
-      delete [] this->objects;
+      delete[] this->objects;
       this->objects = new_objects;
       this->objects_capacity = new_objects_capacity;
     }
-    
+
     this->objects[this->objects_size++] = object;
   }
 
+  __device__ ~hittable_list() {
+    if (this->objects) {
+      for (size_t i = 0; i < this->objects_size; ++i) {
+        delete this->objects[i];
+      }
+
+      delete[] this->objects;
+      this->objects = nullptr;
+    }
+  }
+
   __device__ bool hit(const ray &r, interval ray_t,
-                               hit_record &rec) const override {
+                      hit_record &rec) const override {
     hit_record temp_rec;
     bool hit_anything = false;
     auto closest_so_far = ray_t.max;
