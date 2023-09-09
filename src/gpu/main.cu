@@ -15,7 +15,8 @@
 #include <cuda_runtime.h>
 #include <iostream>
 
-__global__ void new_world(hittable_list *world, material_list *materials, unsigned long long seed) {
+__global__ void new_world(hittable_list *world, material_list *materials,
+                          unsigned long long seed) {
   if (threadIdx.x != 0 || blockIdx.x != 0) {
     return;
   }
@@ -97,7 +98,7 @@ __global__ void new_rand_state(unsigned long long seed, camera *cam,
 
 int main() {
 
-  const unsigned long long seed = 0;
+  const unsigned long long seed = time(nullptr);
 
   // World
   hittable_list *world;
@@ -142,6 +143,7 @@ int main() {
   std::clog << "Samples Per Pixel = " << cam->samples_per_pixel << "\n";
   std::clog << "Block Dim (a x b threads) = " << n_thread_x << " x "
             << n_thread_y << "\n";
+  std::clog << "Random Seed = " << seed << "\n";
 
   auto start = std::chrono::high_resolution_clock::now();
 
