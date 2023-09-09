@@ -9,10 +9,28 @@ class hittable_list : public hittable {
 public:
   hittable_ptr *objects;
   size_t objects_size;
+  size_t objects_capacity;
 
-  __device__ hittable_list() : objects(nullptr), objects_size(0) {}
+  __device__ hittable_list() : objects(nullptr), objects_size(0), objects_capacity(0) {}
 
   __device__ void add(hittable_ptr object) {
+    if (!this->objects) {
+      this->objects = new hittable_ptr[1];
+      this->objects_capacity = 1;
+    }
+
+    if (this->objects_size >= this->objects_capacity) {
+      size_t new_objects_capacity = this->objects_capacity * 2;
+      hittable_ptr *new_objects = new hittable_ptr[new_objects_capacity];
+      for (size_t i = 0; i < this->objects_size; ++i) {
+        new_objects[i] = this->objects[i];
+      }
+
+      delete [] this->objects;
+      this->objects = new_objects;
+      this->objects_capacity = new_objects_capacity;
+    }
+    
     this->objects[this->objects_size++] = object;
   }
 

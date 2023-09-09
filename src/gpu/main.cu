@@ -25,7 +25,6 @@ __global__ void new_world(hittable_list *world) {
   material *material_right = new lambertian(color(1.0f, 0.0f, 0.0f));
 
   new (world) hittable_list();
-  world->objects = new hittable_ptr[2];
   world->add(new sphere(point3(-R, 0.0f, -1.0f), R, material_left));
   world->add(new sphere(point3(R, 0.0f, -1.0f), R, material_right));
 }
