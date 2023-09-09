@@ -153,8 +153,10 @@ int main() {
 
   auto end = std::chrono::high_resolution_clock::now();
   auto timer_in_ms = std::chrono::duration<float, std::milli>(end - start);
-  std::clog << "Time Cost = " << static_cast<int>(timer_in_ms.count() + 0.999f)
-            << " ms\n";
+  auto time_cost_in_ms = static_cast<int>(timer_in_ms.count() + 0.999f);
+  auto time_cost_in_sec = (time_cost_in_ms + 999) / 1000;
+  std::clog << "Time Cost (ms) = " << time_cost_in_ms << " ms\n";
+  std::clog << "Time Cost (sec) = " << time_cost_in_sec << " sec\n";
 
   // Output Image
   output_image(cam, frame_buffer);
