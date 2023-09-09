@@ -6,13 +6,14 @@
 #include "material.h"
 #include "sphere.h"
 
+#include <chrono>
 #include <iostream>
 
 auto _ = []() {
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(nullptr);
   std::cout.tie(nullptr);
-  std::cerr.tie(nullptr);
+  std::clog.tie(nullptr);
   return 0;
 }();
 
@@ -107,10 +108,16 @@ int main() {
 
   // Render
 
+  std::clog << "Image Size = " << image_width << " x " << image_height << "\n";
+  std::clog << "Samples Per Pixel = " << samples_per_pixel << "\n";
+  std::clog << "Number of CPU threads = " << 1 << "\n";
+
+  auto start = std::chrono::high_resolution_clock::now();
+
   std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
 
   for (int j = image_height - 1; j >= 0; --j) {
-    std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+    std::clog << "\rScanlines remaining: " << j << ' ' << std::flush;
     for (int i = 0; i < image_width; ++i) {
       color pixel_color(0, 0, 0);
       for (int s = 0; s < samples_per_pixel; ++s) {
@@ -123,5 +130,12 @@ int main() {
     }
   }
 
-  std::cerr << "\nDone.\n";
+  auto end = std::chrono::high_resolution_clock::now();
+  auto timer_in_ms = std::chrono::duration<float, std::milli>(end - start);
+  auto time_cost_in_ms = static_cast<int>(timer_in_ms.count() + 0.999f);
+  auto time_cost_in_sec = (time_cost_in_ms + 999) / 1000;
+  std::clog << "Time Cost (ms) = " << time_cost_in_ms << " ms\n";
+  std::clog << "Time Cost (sec) = " << time_cost_in_sec << " sec\n";
+
+  std::clog << "\nDone.\n";
 }
