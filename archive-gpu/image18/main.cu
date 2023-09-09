@@ -26,7 +26,7 @@ __global__ void new_world(hittable_list *world) {
   material *material_right = new metal(color(0.8f, 0.6f, 0.2f), 0.0f);
 
   new (world) hittable_list();
-  world->objects = new hittable_ptr[4];
+  world->objects = new hittable_ptr[5];
   world->add(new sphere(point3(0.0f, -100.5f, -1.0f), 100.0f, material_ground));
   world->add(new sphere(point3(0.0f, 0.0f, -1.0f), 0.5f, material_center));
   world->add(new sphere(point3(-1.0f, 0.0f, -1.0f), 0.5f, material_left));
