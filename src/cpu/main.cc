@@ -9,14 +9,6 @@
 #include <chrono>
 #include <iostream>
 
-auto _ = []() {
-  std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
-  std::clog.tie(nullptr);
-  return 0;
-}();
-
 color ray_color(const ray &r, const hittable &world, int depth) {
   hit_record rec;
 
