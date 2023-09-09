@@ -15,13 +15,13 @@
 #include <cuda_runtime.h>
 #include <iostream>
 
-__global__ void new_world(hittable_list *world, material_list *materials) {
+__global__ void new_world(hittable_list *world, material_list *materials, unsigned long long seed) {
   if (threadIdx.x != 0 || blockIdx.x != 0) {
     return;
   }
 
   curandState rand_state;
-  curand_init(0, 0, 0, &rand_state);
+  curand_init(seed, 0, 0, &rand_state);
 
   new (materials) material_list();
 
@@ -97,12 +97,14 @@ __global__ void new_rand_state(unsigned long long seed, camera *cam,
 
 int main() {
 
+  const unsigned long long seed = 0;
+
   // World
   hittable_list *world;
   checkCudaErrors(cudaMalloc(&world, sizeof(*world)));
   material_list *materials;
   checkCudaErrors(cudaMalloc(&materials, sizeof(*materials)));
-  new_world<<<1, 1>>>(world, materials);
+  new_world<<<1, 1>>>(world, materials, seed);
   checkCudaErrors(cudaGetLastError());
   checkCudaErrors(cudaDeviceSynchronize());
 
@@ -130,7 +132,7 @@ int main() {
   // Random State
   curandState *rand_states;
   checkCudaErrors(cudaMalloc(&rand_states, n_pixels * sizeof(*rand_states)));
-  new_rand_state<<<blocks, threads>>>(0, cam, rand_states);
+  new_rand_state<<<blocks, threads>>>(seed, cam, rand_states);
   checkCudaErrors(cudaGetLastError());
   checkCudaErrors(cudaDeviceSynchronize());
 
