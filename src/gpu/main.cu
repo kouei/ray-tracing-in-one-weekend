@@ -130,7 +130,7 @@ int main() {
   // Random State
   curandState *rand_states;
   checkCudaErrors(cudaMalloc(&rand_states, n_pixels * sizeof(*rand_states)));
-  new_rand_state<<<blocks, threads>>>(time(nullptr), cam, rand_states);
+  new_rand_state<<<blocks, threads>>>(0, cam, rand_states);
   checkCudaErrors(cudaGetLastError());
   checkCudaErrors(cudaDeviceSynchronize());
 
