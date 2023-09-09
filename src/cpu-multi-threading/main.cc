@@ -13,7 +13,7 @@ auto _ = []() {
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(nullptr);
   std::cout.tie(nullptr);
-  std::cerr.tie(nullptr);
+  std::clog.tie(nullptr);
   return 0;
 }();
 
@@ -114,10 +114,16 @@ int main() {
   std::vector<std::thread> threads;
   std::atomic_int lines_remaining = image_height;
 
-  std::cerr << "Here\n";
+  std::clog << "Image Size = " << image_width << " x " << image_height << "\n";
+  std::clog << "Samples Per Pixel = " << samples_per_pixel << "\n";
+  std::clog << "Number of CPU threads = " << n_threads << "\n";
+
+  auto start = std::chrono::high_resolution_clock::now();
+
   auto task = [&](int thread_id) {
     for (int j = image_height - 1 - thread_id; j >= 0; j -= n_threads) {
-      std::cerr << "\rScanlines remaining: " << lines_remaining-- << ' ' << std::flush;
+      // std::clog << "\rScanlines remaining: " << lines_remaining-- << ' '
+      //           << std::flush;
       for (int i = 0; i < image_width; ++i) {
         color pixel_color(0, 0, 0);
         for (int s = 0; s < samples_per_pixel; ++s) {
@@ -126,27 +132,34 @@ int main() {
           ray r = cam.get_ray(u, v);
           pixel_color += ray_color(r, world, max_depth);
         }
-        write_color(output_buffer[image_height - 1 - j][i], pixel_color, samples_per_pixel);
+        write_color(output_buffer[image_height - 1 - j][i], pixel_color,
+                    samples_per_pixel);
       }
     }
   };
 
-  for(int i = 0; i < n_threads; ++i) {
+  for (int i = 0; i < n_threads; ++i) {
     threads.emplace_back(task, i);
   }
 
-  for(int i = 0; i < n_threads; ++i) {
+  for (int i = 0; i < n_threads; ++i) {
     threads[static_cast<size_t>(i)].join();
   }
+
+  auto end = std::chrono::high_resolution_clock::now();
+  auto timer_in_ms = std::chrono::duration<float, std::milli>(end - start);
+  auto time_cost_in_ms = static_cast<int>(timer_in_ms.count() + 0.999f);
+  auto time_cost_in_sec = (time_cost_in_ms + 999) / 1000;
+  std::clog << "Time Cost (ms) = " << time_cost_in_ms << " ms\n";
+  std::clog << "Time Cost (sec) = " << time_cost_in_sec << " sec\n";
 
   std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
   for (int j = 0; j < image_height; ++j) {
     for (int i = 0; i < image_width; ++i) {
-      std::cout << output_buffer[j][i][0] << ' '
-                << output_buffer[j][i][1] << ' '
-                << output_buffer[j][i][2] << '\n';
+      std::cout << output_buffer[j][i][0] << ' ' << output_buffer[j][i][1]
+                << ' ' << output_buffer[j][i][2] << '\n';
     }
   }
 
-  std::cerr << "\nDone.\n";
+  std::clog << "\nDone.\n";
 }
