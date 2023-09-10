@@ -83,19 +83,6 @@ __global__ void delete_world(hittable_list *world, material_list *materials) {
   materials->~material_list();
 }
 
-__global__ void new_rand_state(unsigned long long seed, camera *cam,
-                               curandState *rand_states) {
-  int i = threadIdx.x + blockIdx.x * blockDim.x;
-  int j = threadIdx.y + blockIdx.y * blockDim.y;
-  if ((i >= cam->image_width) || (j >= cam->image_height)) {
-    return;
-  }
-
-  int pixel_index = j * cam->image_width + i;
-  // Each thread gets same seed, a different sequence number, no offset
-  curand_init(seed, pixel_index, 0, &rand_states[pixel_index]);
-}
-
 int main() {
 
   const unsigned long long seed = time(nullptr);
@@ -130,13 +117,6 @@ int main() {
   dim3 blocks(n_block_x, n_block_y);
   dim3 threads(n_thread_x, n_thread_y);
 
-  // Random State
-  curandState *rand_states;
-  checkCudaErrors(cudaMalloc(&rand_states, n_pixels * sizeof(*rand_states)));
-  new_rand_state<<<blocks, threads>>>(seed, cam, rand_states);
-  checkCudaErrors(cudaGetLastError());
-  checkCudaErrors(cudaDeviceSynchronize());
-
   // Render
   std::clog << "Image Size = " << cam->image_width << " x " << cam->image_height
             << "\n";
@@ -147,7 +127,7 @@ int main() {
 
   auto start = std::chrono::high_resolution_clock::now();
 
-  render<<<blocks, threads>>>(frame_buffer, cam, world, rand_states);
+  render<<<blocks, threads>>>(frame_buffer, cam, world, seed);
   checkCudaErrors(cudaGetLastError());
   checkCudaErrors(cudaDeviceSynchronize());
 
@@ -160,9 +140,6 @@ int main() {
 
   // Output Image
   output_image(cam, frame_buffer);
-
-  // Cleanup Random State
-  checkCudaErrors(cudaFree(rand_states));
 
   // Cleanup Frame Buffer
   checkCudaErrors(cudaFree(frame_buffer));

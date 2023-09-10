@@ -38,7 +38,7 @@ public:
   __global__ friend void new_camera(camera *cam);
 
   __global__ friend void render(color *frame_buffer, camera *cam,
-                                hittable *world, curandState *rand_state);
+                                hittable *world, unsigned long long seed);
 
   __device__ friend vec3 pixel_sample_square(camera &cam,
                                              curandState &rand_state);
@@ -167,7 +167,7 @@ __device__ ray get_ray(camera &cam, int i, int j, curandState &rand_state) {
 }
 
 __global__ void render(color *frame_buffer, camera *cam, hittable *world,
-                       curandState *rand_states) {
+                       unsigned long long seed) {
 
   int image_x = threadIdx.x + blockIdx.x * blockDim.x;
   int image_y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -182,13 +182,15 @@ __global__ void render(color *frame_buffer, camera *cam, hittable *world,
   auto ray_direction = pixel_center - cam->center;
 
   color pixel_color = color(0.0f, 0.0f, 0.0f);
-  curandState rand_state = rand_states[pixel_index];
+
+  curandState rand_state;
+  curand_init(seed, pixel_index, 0, &rand_state);
+
   for (int sample = 0; sample < cam->samples_per_pixel; ++sample) {
     ray r = get_ray(cam[0], image_x, image_y, rand_state);
     pixel_color += ray_color(r, world[0], rand_state, cam->max_depth);
   }
 
-  rand_states[pixel_index] = rand_state;
   frame_buffer[pixel_index] = pixel_color;
 }
 
