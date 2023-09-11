@@ -9,10 +9,6 @@ add_executable(cpu_multi_threading_ray_tracer src/cpu-multi-threading/main.cc)
 add_executable(gpu_ray_tracer src/gpu/main.cu)
 add_executable(gpu_ray_tracer_debug src/gpu/main.cu)
 
-# target_include_directories(cpu_ray_tracer PUBLIC src/include)
-# target_include_directories(cpu_multi_threading_ray_tracer PUBLIC src/include)
-# target_include_directories(gpu_ray_tracer PUBLIC src/include)
-
 set_target_properties(gpu_ray_tracer PROPERTIES CUDA_ARCHITECTURES native)
 set_target_properties(gpu_ray_tracer_debug PROPERTIES CUDA_ARCHITECTURES native)
 
