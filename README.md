@@ -1,5 +1,6 @@
 # Ray Tracing in One Weekend
 https://raytracing.github.io/books/RayTracingInOneWeekend.html
+![cover](./gallery/gpu/image23-4k.png)
 
 # Quick Start for Windows Platform
 
